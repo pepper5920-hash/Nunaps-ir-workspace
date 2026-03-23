@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nunaps IR 2025 Workspace</title>
+<title>Nunaps IR 2026 Workspace</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -272,7 +272,7 @@ function renderTopNav(){
   const nav=h('div',{className:'topnav'}),inner=h('div',{className:'topnav-inner'});
   const left=h('div',{className:'topnav-left',onClick:()=>{state.view='dashboard';state.filterDept=null;render()}});
   left.appendChild(h('div',{className:'topnav-logo'},'🧠'));
-  left.appendChild(h('div',{className:'topnav-title',innerHTML:'NUNAPS IR 2025 <span class="topnav-sub">Workspace</span>'}));
+  left.appendChild(h('div',{className:'topnav-title',innerHTML:'NUNAPS IR 2026 <span class="topnav-sub">Workspace</span>'}));
   inner.appendChild(left);
   const right=h('div',{className:'topnav-right'});
   right.appendChild(h('div',{className:'topnav-status'+(state.connected?'':' offline')},h('span',{className:'dot'}),state.connected?'서버 연결됨':'로컬 저장'));
