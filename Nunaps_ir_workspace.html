@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nunaps IR 2026 Workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#F8FAFC;--bg2:#FFFFFF;--bg3:#F1F5F9;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --teal:#0891B2;--navy:#0F172A;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow2:0 4px 12px rgba(0,0,0,.08);
+  --r:16px;--rs:10px;
+  --font:'Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html{height:100%;scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100%;line-height:1.6}
+
+.topnav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 24px}
+.topnav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.topnav-left{display:flex;align-items:center;gap:14px;cursor:pointer}
+.topnav-logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#0891B2,#06B6D4);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(8,145,178,.3)}
+.topnav-title{font-size:17px;font-weight:800;color:var(--navy);letter-spacing:-.5px}
+.topnav-sub{font-size:12px;color:var(--text3);font-weight:400;margin-left:4px}
+.topnav-right{display:flex;align-items:center;gap:12px}
+.topnav-status{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:#D1FAE5;color:#059669}
+.topnav-status.offline{background:#FEE2E2;color:#DC2626}
+.topnav-status .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.save-status{font-size:12px;color:var(--text4)}
+
+.tabs{position:sticky;top:64px;z-index:40;background:rgba(255,255,255,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px}
+.tabs-inner{max-width:1100px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:8px 0;-ms-overflow-style:none;scrollbar-width:none}
+.tabs-inner::-webkit-scrollbar{display:none}
+.tab{padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;border:none;background:transparent;color:var(--text3);font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:6px}
+.tab:hover{background:var(--bg3);color:var(--text2)}
+.tab.active{background:var(--navy);color:#fff}
+.tab .tab-dot{width:6px;height:6px;border-radius:50%}
+
+.container{max-width:1100px;margin:0 auto;padding:28px 24px 60px}
+
+.dashboard-header{margin-bottom:32px}
+.dashboard-title{font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-1px;line-height:1.2}
+.dashboard-desc{font-size:16px;color:var(--text3);margin-top:8px}
+
+.progress-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:28px;margin-bottom:28px;box-shadow:var(--shadow)}
+.progress-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+.progress-title{font-size:15px;font-weight:700;color:var(--text)}
+.progress-pct{font-size:28px;font-weight:900;letter-spacing:-1px}
+.progress-track{height:8px;background:var(--bg3);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s ease}
+
+.dept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:20px}
+.dept-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);transition:all .2s;cursor:pointer}
+.dept-card:hover{box-shadow:var(--shadow2);transform:translateY(-1px)}
+.dept-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.dept-count{font-size:13px;color:var(--text3);margin-bottom:12px}
+.dept-track{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.dept-fill{height:100%;border-radius:3px;transition:width .4s}
+.dept-pct{font-size:12px;font-weight:700;margin-top:6px;text-align:right}
+
+.slides-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:24px}
+.slide-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.slide-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px)}
+.slide-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.slide-card-num{font-size:12px;font-weight:800;color:var(--text4);background:var(--bg3);padding:4px 10px;border-radius:6px}
+.slide-card-dept{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px}
+.slide-card-title{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px;letter-spacing:-.3px}
+.slide-card-sub{font-size:13px;color:var(--text3);margin-bottom:14px;line-height:1.5}
+.slide-card-progress{display:flex;align-items:center;gap:10px}
+.slide-card-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.slide-card-fill{height:100%;border-radius:3px;transition:width .3s}
+.slide-card-pct{font-size:12px;font-weight:700;min-width:35px;text-align:right}
+.slide-card-status{position:absolute;top:0;left:0;right:0;height:3px}
+
+.slide-detail{max-width:800px;margin:0 auto}
+.slide-back{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--text3);cursor:pointer;margin-bottom:20px;padding:6px 12px;border-radius:var(--rs);border:none;background:transparent;font-family:var(--font);transition:all .15s}
+.slide-back:hover{background:var(--bg3);color:var(--text)}
+.slide-detail-header{margin-bottom:32px}
+.slide-detail-num{font-size:13px;font-weight:700;color:var(--teal);margin-bottom:4px;letter-spacing:1px}
+.slide-detail-title{font-size:30px;font-weight:900;color:var(--navy);letter-spacing:-.8px;line-height:1.2;margin-bottom:6px}
+.slide-detail-sub{font-size:16px;color:var(--text3);line-height:1.5}
+.slide-detail-dept{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 16px;border-radius:var(--rs);font-size:13px;font-weight:700}
+.slide-detail-dept .dept-dot{width:8px;height:8px;border-radius:50%}
+
+.field-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:20px;box-shadow:var(--shadow);overflow:hidden;transition:border-color .25s,box-shadow .25s}
+.field-card.editing{border-color:var(--teal);box-shadow:0 0 0 3px rgba(8,145,178,.1),var(--shadow)}
+.field-card.filled{border-color:#6EE7B7}
+.field-header{padding:18px 22px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg3)}
+.field-header-left{display:flex;align-items:center;gap:10px}
+.field-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.field-label{font-size:16px;font-weight:700;color:var(--text)}
+.field-dept-tag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:6px}
+.field-body{padding:6px}
+.field-body textarea{width:100%;padding:16px 18px;background:transparent;border:none;outline:none;resize:vertical;font-size:15px;line-height:1.8;color:var(--text);font-family:var(--font);min-height:140px}
+.field-body textarea::placeholder{color:var(--text4);font-size:14px}
+
+.slide-nav{display:flex;justify-content:space-between;align-items:center;margin-top:36px;padding-top:24px;border-top:1px solid var(--border)}
+.slide-nav-btn{padding:12px 24px;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;border:none}
+.slide-nav-prev{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+.slide-nav-prev:hover{background:var(--border);color:var(--text)}
+.slide-nav-prev:disabled{opacity:.3;cursor:default}
+.slide-nav-next{background:var(--navy);color:#fff}
+.slide-nav-next:hover{opacity:.9}
+.slide-nav-next:disabled{opacity:.3;cursor:default}
+.slide-nav-mid{font-size:13px;color:var(--text4)}
+
+@media(max-width:640px){
+  .topnav-sub{display:none}
+  .container{padding:20px 16px 40px}
+  .dashboard-title{font-size:24px}
+  .slides-grid{grid-template-columns:1fr}
+  .dept-grid{grid-template-columns:1fr 1fr}
+  .slide-detail-title{font-size:24px}
+  .tab{padding:6px 12px;font-size:12px}
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.field-card.editing-remote{border-color:#F59E0B;box-shadow:0 0 0 3px rgba(245,158,11,.12),var(--shadow)}
+.remote-badge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;animation:pulse 1.5s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycbynimP2lFGaGm_qc5-cs4bzLwIjHLMd3I0R0nObxgIhZMMPYrhXDHCWZYjYZsD9ecp2_w/exec';
+const DEPTS={
+  '경영관리부':{bg:'#EDE9FE',text:'#6D28D9',dot:'#8B5CF6'},
+  '해외사업부':{bg:'#DBEAFE',text:'#1D4ED8',dot:'#3B82F6'},
+  '국내사업부':{bg:'#CFFAFE',text:'#0E7490',dot:'#06B6D4'},
+  '연구부':{bg:'#D1FAE5',text:'#047857',dot:'#10B981'},
+  '임상인허가부':{bg:'#FEF3C7',text:'#92400E',dot:'#F59E0B'},
+  '웰니스사업부':{bg:'#FCE7F3',text:'#9D174D',dot:'#EC4899'},
+};
+function dc(d){return DEPTS[d]||{bg:'#F1F5F9',text:'#475569',dot:'#94A3B8'}}
+const SLIDES=[
+  {id:'p1',num:'P1',title:'Company Overview',section:'회사 소개',subtitle:'AI와 신경가소성 기술을 결합한 디지털치료제 기업',dept:['경영관리부'],fields:[
+    {key:'p1_company_info',label:'회사 개황',placeholder:'설립연월, 직원수, 자본금, 본사위치, 홈페이지, MISSION/VISION 등을 작성해주세요.'},
+    {key:'p1_business_areas',label:'주요 사업 분야',placeholder:'디지털치료제(DTx): 비비드브레인 등\n웰니스: 뉴냅비전 등\n혁신의료기기 3종 상세 (비비드브레인, 소타, 뉴티)'},
+  ]},
+  {id:'p2',num:'P2',title:'Investment Highlights',section:'투자 하이라이트',subtitle:'Why Invest in Nunaps?',dept:['경영관리부'],fields:[
+    {key:'p2_tech',label:'기술성',placeholder:'차별화된 기술력(국내 최초 DTx 상용화), 임상 및 인허가 기반 경쟁력\n→ 구체적 수치와 근거를 포함해주세요.'},
+    {key:'p2_market',label:'시장성',placeholder:'미충족 의료 수요 분야, 파이프라인 확장성\n→ 시장 규모 데이터를 포함해주세요.'},
+    {key:'p2_biz',label:'사업성',placeholder:'독일 DiGA 등 글로벌 시장 진출 준비, 혁신의료기기 등록, 국내 병원 처방 수 등'},
+  ]},
+  {id:'p3',num:'P3',title:'Leadership Team',section:'핵심인력',subtitle:'각 분야 전문가로 구성된 핵심인력',dept:['경영관리부'],fields:[
+    {key:'p3_ceo',label:'대표이사 프로필',placeholder:'학력, 주요경력, 논문(SCI 270편, h-index 75), 특허(80건), 수상 등'},
+    {key:'p3_clevel',label:'C-Level 프로필',placeholder:'CTO, CQRO, CBO 등 각 임원의 학력, 주요경력 2~3줄씩 작성해주세요.'},
+    {key:'p3_advisory',label:'Advisory Group',placeholder:'의료진/교수진, 협력 병원/기업, 주요 자문위원 명단 및 소속/직위'},
+  ]},
+  {id:'p4',num:'P4',title:'Market Opportunity',section:'시장 기회',subtitle:'글로벌 디지털 치료 시장 성장 현황',dept:['해외사업부','국내사업부','연구부'],fields:[
+    {key:'p4_tam',label:'시장 규모 (TAM / SAM / SOM)',placeholder:'글로벌 vs 국내 시장 규모, CAGR 성장률\n출처: Grand View Research, Mordor Intelligence 등'},
+    {key:'p4_drivers',label:'시장 확대 배경',placeholder:'디지털치료제 시장이 확대되는 배경과 성장 드라이버를 작성해주세요.'},
+    {key:'p4_chart',label:'차트용 데이터',placeholder:'연도별 시장 규모 추이 데이터 (차트 제작용 원본 데이터)'},
+  ]},
+  {id:'p5',num:'P5',title:'Industry & Trends',section:'산업 및 트렌드',subtitle:'디지털 치료와 AI 기술 발전',dept:['해외사업부','국내사업부'],fields:[
+    {key:'p5_policy',label:'정책 환경',placeholder:'식약처 DTx 정책, 보험 등재 가능성, 해외 규제 트렌드 (독일 DiGA, 미국 FDA 등)'},
+    {key:'p5_growth',label:'디지털 헬스케어 성장',placeholder:'시장 성장 데이터, AI 의료기기 승인 현황, 주요 글로벌 동향'},
+    {key:'p5_paradigm',label:'의료 패러다임 변화',placeholder:'과거(경구약, 주사) → 현재(AI 기반 진단/전자약) 치료 패러다임 전환 설명'},
+  ]},
+  {id:'p6',num:'P6',title:'Problem Definition',section:'문제 정의',subtitle:'뇌졸중 후유증 치료의 결정적 공백',dept:['해외사업부'],fields:[
+    {key:'p6_unmet',label:'미충족 의료 수요 상세',placeholder:'시야장애(~20%), 인지장애(~50%), 언어장애(30-40%)\n현재 승인된 표준 약물 치료제 수 등 통계 데이터'},
+    {key:'p6_global',label:'글로벌 환자 현황',placeholder:'전 세계 뇌졸중 생존자 통계, VFD 환자 규모 등 근거 데이터'},
+  ]},
+  {id:'p7',num:'P7',title:'Nunaps Solution',section:'솔루션',subtitle:'우리는 눈이 아닌 \'뇌\'를 치료합니다',dept:['해외사업부'],fields:[
+    {key:'p7_moa',label:'Mechanism of Action',placeholder:'1. Structured Stimulation\n2. Neuroplasticity Induction\n3. Functional Recovery\n각 단계를 상세히 설명해주세요.'},
+    {key:'p7_science',label:'Scientific Basis & Clinical Proof',placeholder:'DTI 분석 결과, fMRI 훈련 전/후 비교, 뇌 가소성 근거 데이터'},
+    {key:'p7_images',label:'필요 이미지 목록',placeholder:'DTI 이미지, fMRI 비교 이미지, 제품 사용 장면 등 필요한 시각자료를 나열해주세요.'},
+  ]},
+  {id:'p8',num:'P8',title:'Technology (1/2)',section:'기술 경쟁력',subtitle:'AI 기반 시각 재활 디지털 치료 플랫폼',dept:['연구부'],fields:[
+    {key:'p8_arch',label:'기술 아키텍처',placeholder:'AI 알고리즘 아키텍처 다이어그램 또는 개념도\n환자 맞춤 치료 프로세스, 데이터 분석 파이프라인'},
+    {key:'p8_diff',label:'기술 차별화 포인트',placeholder:'핵심 기술 차별화 vs 경쟁사\n기술 확장성 (타 질환 적용 가능성)'},
+  ]},
+  {id:'p9',num:'P9',title:'Technology (2/2)',section:'임상 & 학술',subtitle:'식약처 임상을 통한 치료효과 검증',dept:['임상인허가부'],fields:[
+    {key:'p9_clinical',label:'임상 결과 데이터',placeholder:'탐색 임상 / 확증 임상 결과\n6개 유효성 평가변수 상세\n차트나 그래프용 데이터'},
+    {key:'p9_pub',label:'학술 논문 & 특허',placeholder:'JAMA Network Open 논문 상세\n주요 SCI 논문 목록\n특허 현황 (국내외 출원/등록 건수)'},
+  ]},
+  {id:'p10',num:'P10',title:'Product Pipeline',section:'파이프라인',subtitle:'디지털치료제, AI, 웰니스 제품 개발 및 상용화',dept:['연구부'],fields:[
+    {key:'p10_pipeline',label:'파이프라인 현황 업데이트',placeholder:'각 제품별 최신 개발단계 업데이트\nSOTA/ASSA 구분 명확화\nAI 카테고리 확정 필요'},
+  ]},
+  {id:'p11',num:'P11',title:'Core Product — Vividbrain',section:'핵심 제품',subtitle:'시야장애 디지털치료제 — Value Upside',dept:['국내사업부'],fields:[
+    {key:'p11_detail',label:'Vividbrain 상세',placeholder:'처방 및 치료 프로그램 플로우\n제품 이미지, UX 스크린샷'},
+    {key:'p11_cert',label:'인증 및 특허 현황',placeholder:'K-FDA 혁신의료기기 인증 상세\n확증 임상 승인 내역\n국내외 특허 목록'},
+  ]},
+  {id:'p12',num:'P12',title:'Core Product — Nunapvision',section:'웰니스 제품',subtitle:'시야/시각 재활 웰니스 — Cash Maker',dept:['웰니스사업부'],fields:[
+    {key:'p12_detail',label:'뉴냅비전 상세',placeholder:'프로그램 플로우 (평가 → 웜업 → 훈련 → 쿨다운)\nUX 스크린샷, 제품 이미지'},
+    {key:'p12_sales',label:'판매 현황',placeholder:'현재 판매 채널, 판매량, 가격 정책, 사용자 피드백'},
+  ]},
+  {id:'p13',num:'P13',title:'Business Model',section:'사업모델',subtitle:'시장 선점 + 후속 파이프라인 확장',dept:['해외사업부'],fields:[
+    {key:'p13_vb',label:'Vividbrain 수익 구조',placeholder:'처방 기반 수익 구조 (단가, 과금 방식, 보험 적용 여부)\n해외 시장별 수익 모델'},
+    {key:'p13_nv',label:'Nunapvision 수익 구조',placeholder:'온라인 판매 채널 및 가격 정책\n구독/일회성 모델'},
+    {key:'p13_proj',label:'매출 목표 & 시나리오',placeholder:'중장기 매출 목표\n수익 시나리오 (보수적 / 기본 / 낙관적)'},
+  ]},
+  {id:'p14',num:'P14',title:'Go-to-Market Strategy',section:'GTM 전략',subtitle:'병원 확장 + 해외 진출 + 파트너십',dept:['해외사업부'],fields:[
+    {key:'p14_hospital',label:'병원/의료기관 확장 전략',placeholder:'현재 처방 병원 현황, 확장 로드맵\n처방 활성화 전략, 의료진 교육, KOL 전략'},
+    {key:'p14_overseas',label:'해외 진출 전략',placeholder:'독일 DiGA 진출 일정, 일본 PDMA 진행 현황\n기타 타겟 국가, 현지화 전략'},
+    {key:'p14_partner',label:'파트너십 구조',placeholder:'전략적 파트너십 현황\n유통/판매/학술/연구 협력, 기술 라이선싱'},
+  ]},
+  {id:'p15',num:'P15',title:'Traction & Milestones',section:'성과 및 트랙션',subtitle:'국내 인허가 획득 및 병원 처방 현황',dept:['해외사업부'],fields:[
+    {key:'p15_domestic',label:'국내 성과',placeholder:'처방 병원 수: #개 (예정 #개)\n처방 환자 수: #명\n재처방율'},
+    {key:'p15_overseas',label:'해외 성과',placeholder:'독일 DiGA 임시등재 절차 진행 현황\n일본 PDMA 사전상담\n기타 국가'},
+    {key:'p15_timeline',label:'주요 마일스톤 타임라인',placeholder:'연도별/분기별 주요 마일스톤\n인포그래픽 제작용 데이터'},
+  ]},
+  {id:'appendix',num:'App',title:'Appendix',section:'부록',subtitle:'투자개요, 재무현황, IPO일정, 후속 파이프라인',dept:['해외사업부'],fields:[
+    {key:'app_invest',label:'투자 개요',placeholder:'투자 라운드, 밸류에이션, 투자금 사용 계획'},
+    {key:'app_fin',label:'재무 현황',placeholder:'매출, 영업이익, 현금 보유량 등 주요 재무 지표'},
+    {key:'app_ipo',label:'IPO 일정',placeholder:'IPO 로드맵 및 일정'},
+    {key:'app_pipe',label:'후속 파이프라인 개발 성과',placeholder:'각 파이프라인별 최신 개발 진행 현황 상세'},
+  ]},
+];
+
+let state={view:'dashboard',activeSlide:0,data:{},connected:false,saving:false,lastSaved:null,filterDept:null,loading:true,editingKeys:{},remoteEditing:{}};
+
+// 사용자 고유 ID (브라우저 세션 기반)
+const USER_ID=(()=>{let id=sessionStorage.getItem('nunaps_uid');if(!id){id='user_'+Math.random().toString(36).slice(2,8);sessionStorage.setItem('nunaps_uid',id);}return id;})();
+const USER_NAME=prompt('이름을 입력해주세요 (편집 상태 표시용)','')||USER_ID;
+
+async function sendEditingState(key,isEditing){
+  if(!state.connected)return;
+  try{
+    const controller=new AbortController();
+    setTimeout(()=>controller.abort(),3000);
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'editing',userId:USER_ID,userName:USER_NAME,key:key,editing:isEditing}),signal:controller.signal});
+  }catch(e){}
+}
+
+function updateRemoteBadges(){
+  document.querySelectorAll('.field-card[data-field-key]').forEach(card=>{
+    const key=card.getAttribute('data-field-key');
+    const badge=card.querySelector('.remote-badge');
+    const editors=Object.entries(state.remoteEditing).filter(([uid,info])=>uid!==USER_ID&&info.key===key&&(Date.now()-info.ts<15000));
+    if(editors.length>0){
+      const names=editors.map(([,info])=>info.name).join(', ');
+      if(badge){badge.textContent='✏️ '+names+' 편집 중';badge.style.display='flex';}
+      card.classList.add('editing-remote');
+    }else{
+      if(badge)badge.style.display='none';
+      card.classList.remove('editing-remote');
+    }
+  });
+}
+
+async function apiLoad(){
+  try{
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),5000);
+    const r=await fetch(API_URL+'?action=load',{signal:controller.signal});
+    clearTimeout(timeout);
+    const j=await r.json();
+    if(j.data)state.data=j.data;
+    state.connected=true;
+  }catch(e){
+    console.log('API unavailable, using local storage');
+    try{const l=localStorage.getItem('nunaps_ir_data');if(l)state.data=JSON.parse(l);}catch(e2){}
+  }
+  state.loading=false;
+}
+let saveTimer=null;
+function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(doSave,3000);}
+function updateSaveStatus(){
+  const right=document.querySelector('.topnav-right');if(!right)return;
+  const old=right.querySelector('.save-status');if(old)old.remove();
+  const el=document.createElement('div');el.className='save-status';
+  if(state.saving)el.textContent='저장 중...';
+  else if(state.lastSaved)el.textContent='✓ '+state.lastSaved.toLocaleTimeString('ko-KR');
+  else return;
+  right.appendChild(el);
+}
+async function doSave(){
+  try{localStorage.setItem('nunaps_ir_data',JSON.stringify(state.data));}catch(e){}
+  state.saving=true;updateSaveStatus();
+  try{
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),5000);
+    await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save',data:state.data}),signal:controller.signal});
+    clearTimeout(timeout);
+    state.connected=true;
+  }catch(e){console.log('Save to server failed, saved locally');}
+  state.saving=false;state.lastSaved=new Date();updateSaveStatus();
+}
+setInterval(async()=>{if(!state.connected)return;try{const controller=new AbortController();setTimeout(()=>controller.abort(),5000);const r=await fetch(API_URL+'?action=load',{signal:controller.signal});const j=await r.json();if(j.data){const ae=document.activeElement;const ak=ae&&ae.tagName==='TEXTAREA'?ae.getAttribute('data-key'):null;Object.keys(j.data).forEach(k=>{if(k!==ak)state.data[k]=j.data[k];});}if(j.editing)state.remoteEditing=j.editing;updateRemoteBadges();}catch(e){}},5000);
+
+function tp(){const t=SLIDES.reduce((s,sl)=>s+sl.fields.length,0);const f=SLIDES.reduce((s,sl)=>s+sl.fields.filter(f=>state.data[f.key]?.trim()).length,0);return t?Math.round(f/t*100):0;}
+function sp(sl){if(!sl.fields.length)return 100;return Math.round(sl.fields.filter(f=>state.data[f.key]?.trim()).length/sl.fields.length*100);}
+function ds(){const s={};SLIDES.forEach(sl=>{sl.fields.forEach(f=>{sl.dept.forEach(d=>{if(!s[d])s[d]={total:0,filled:0};s[d].total++;if(state.data[f.key]?.trim())s[d].filled++;});});});return s;}
+
+function h(tag,attrs,...ch){
+  const el=document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>{
+    if(k==='className')el.className=v;else if(k==='style'&&typeof v==='object')Object.assign(el.style,v);
+    else if(k.startsWith('on'))el.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==='innerHTML')el.innerHTML=v;else if(k==='disabled'){if(v)el.setAttribute('disabled','');}
+    else if(k==='placeholder')el.placeholder=v;else if(k==='value')el.value=v;else if(k==='rows')el.rows=v;
+    else el.setAttribute(k,v);
+  });
+  ch.flat().forEach(c=>{if(c==null)return;el.appendChild(typeof c==='string'?document.createTextNode(c):c);});
+  return el;
+}
+
+function render(){
+  const app=document.getElementById('app');app.innerHTML='';
+  if(state.loading){app.appendChild(h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:'14px'}},h('div',{style:{fontSize:'48px'}},'🧠'),h('div',{style:{fontSize:'14px',color:'#94A3B8',letterSpacing:'3px',fontWeight:'600'}},'LOADING...')));return;}
+  app.appendChild(renderTopNav());app.appendChild(renderTabs());
+  const c=h('div',{className:'container'});
+  c.appendChild(state.view==='dashboard'?renderDashboard():renderSlideDetail());
+  app.appendChild(c);
+  updateRemoteBadges();
+}
+
+window.addEventListener('beforeunload',()=>{sendEditingState(null,false);});
+
+function renderTopNav(){
+  const nav=h('div',{className:'topnav'}),inner=h('div',{className:'topnav-inner'});
+  const left=h('div',{className:'topnav-left',onClick:()=>{state.view='dashboard';state.filterDept=null;render()}});
+  left.appendChild(h('div',{className:'topnav-logo'},'🧠'));
+  left.appendChild(h('div',{className:'topnav-title',innerHTML:'NUNAPS IR 2026 <span class="topnav-sub">Workspace</span>'}));
+  inner.appendChild(left);
+  const right=h('div',{className:'topnav-right'});
+  right.appendChild(h('div',{className:'topnav-status'+(state.connected?'':' offline')},h('span',{className:'dot'}),state.connected?'서버 연결됨':'로컬 저장'));
+  if(state.saving)right.appendChild(h('div',{className:'save-status'},'저장 중...'));
+  else if(state.lastSaved)right.appendChild(h('div',{className:'save-status'},'✓ '+state.lastSaved.toLocaleTimeString('ko-KR')));
+  inner.appendChild(right);nav.appendChild(inner);return nav;
+}
+
+function renderTabs(){
+  const tabs=h('div',{className:'tabs'}),inner=h('div',{className:'tabs-inner'});
+  inner.appendChild(h('button',{className:'tab'+(state.view==='dashboard'&&!state.filterDept?' active':''),onClick:()=>{state.view='dashboard';state.filterDept=null;render()}},'📊 전체'));
+  Object.entries(DEPTS).forEach(([name,c])=>{
+    const isA=state.filterDept===name;
+    const t=h('button',{className:'tab'+(isA?' active':''),onClick:()=>{state.filterDept=isA?null:name;state.view='dashboard';render()}});
+    if(!isA)t.appendChild(h('span',{className:'tab-dot',style:{background:c.dot}}));
+    t.appendChild(document.createTextNode(name));inner.appendChild(t);
+  });
+  tabs.appendChild(inner);return tabs;
+}
+
+function renderDashboard(){
+  const w=h('div',{});
+  const hdr=h('div',{className:'dashboard-header'});
+  if(state.filterDept){
+    const c=dc(state.filterDept);
+    hdr.appendChild(h('div',{className:'dashboard-title',style:{color:c.text}},state.filterDept+' 담당 슬라이드'));
+    hdr.appendChild(h('div',{className:'dashboard-desc'},'아래 카드를 클릭해서 내용을 입력해주세요.'));
+  }else{
+    hdr.appendChild(h('div',{className:'dashboard-title'},'IR Deck 작성 현황'));
+    hdr.appendChild(h('div',{className:'dashboard-desc'},'각 슬라이드 카드를 클릭하면 내용을 입력할 수 있습니다.'));
+  }
+  w.appendChild(hdr);
+
+  // Progress + dept summary (compact, only on main dashboard)
+  if(!state.filterDept){
+    const prog=tp();
+    const sec=h('div',{className:'progress-section'});
+    // Progress bar row
+    const row=h('div',{style:{display:'flex',alignItems:'center',gap:'16px',marginBottom:'14px'}});
+    row.appendChild(h('div',{style:{fontSize:'14px',fontWeight:'700',color:'#0F172A',whiteSpace:'nowrap'}},'전체 진행률'));
+    const trackWrap=h('div',{style:{flex:'1'}});
+    const track=h('div',{className:'progress-track'});
+    track.appendChild(h('div',{className:'progress-fill',style:{width:prog+'%',background:prog===100?'linear-gradient(90deg,#059669,#34D399)':'linear-gradient(90deg,#0891B2,#22D3EE)'}}));
+    trackWrap.appendChild(track);
+    row.appendChild(trackWrap);
+    row.appendChild(h('div',{style:{fontSize:'20px',fontWeight:'900',letterSpacing:'-1px',color:prog===100?'#059669':'#0891B2',whiteSpace:'nowrap'}},prog+'%'));
+    sec.appendChild(row);
+    // Dept mini cards in a row
+    const dsum=ds();
+    const deptRow=h('div',{style:{display:'flex',gap:'8px',flexWrap:'wrap'}});
+    Object.entries(dsum).forEach(([name,info])=>{
+      const pct=Math.round(info.filled/info.total*100);
+      const c=dc(name);
+      const chip=h('div',{style:{display:'flex',alignItems:'center',gap:'8px',padding:'8px 14px',borderRadius:'10px',background:c.bg,cursor:'pointer',border:'1px solid '+c.bd,transition:'transform .15s'},onClick:()=>{state.filterDept=name;render()}});
+      chip.appendChild(h('span',{style:{fontSize:'13px',fontWeight:'700',color:c.text}},name));
+      chip.appendChild(h('span',{style:{fontSize:'12px',fontWeight:'600',color:pct===100?'#059669':c.text}},info.filled+'/'+info.total));
+      deptRow.appendChild(chip);
+    });
+    sec.appendChild(deptRow);
+    w.appendChild(sec);
+  }
+
+  // Slide title
+  w.appendChild(h('div',{style:{fontSize:'18px',fontWeight:'800',color:'#0F172A',margin:'24px 0 14px',letterSpacing:'-0.3px'}},
+    state.filterDept?(state.filterDept+' 슬라이드'):'전체 슬라이드'));
+
+  // Slide cards
+  const grid=h('div',{className:'slides-grid'});
+  let count=0;
+  SLIDES.forEach((sl,i)=>{
+    if(state.filterDept&&!sl.dept.includes(state.filterDept))return;
+    count++;
+    const p=sp(sl),c=dc(sl.dept[0]);
+    const card=h('div',{className:'slide-card',onClick:()=>{state.view='detail';state.activeSlide=i;render();window.scrollTo(0,0)}});
+    card.appendChild(h('div',{className:'slide-card-status',style:{background:p===100?'#059669':c.dot}}));
+    const top=h('div',{className:'slide-card-top'});
+    top.appendChild(h('div',{className:'slide-card-num'},sl.num));
+    top.appendChild(h('div',{className:'slide-card-dept',style:{background:c.bg,color:c.text}},sl.dept.join(' · ')));
+    card.appendChild(top);
+    card.appendChild(h('div',{className:'slide-card-title'},sl.title));
+    card.appendChild(h('div',{className:'slide-card-sub'},sl.subtitle));
+    // 이 슬라이드 필드 중 누가 편집 중인지 확인
+    const slideEditors=Object.entries(state.remoteEditing).filter(([uid,info])=>uid!==USER_ID&&sl.fields.some(f=>f.key===info.key)&&(Date.now()-info.ts<15000));
+    if(slideEditors.length>0){
+      const names=[...new Set(slideEditors.map(([,info])=>info.name))].join(', ');
+      card.appendChild(h('div',{style:{fontSize:'11px',fontWeight:'700',color:'#92400E',background:'#FEF3C7',padding:'4px 10px',borderRadius:'6px',marginBottom:'8px',display:'inline-flex',alignItems:'center',gap:'4px',animation:'pulse 1.5s ease-in-out infinite'}},'✏️ '+names+' 편집 중'));
+    }
+    const pr=h('div',{className:'slide-card-progress'}),t=h('div',{className:'slide-card-track'});
+    t.appendChild(h('div',{className:'slide-card-fill',style:{width:p+'%',background:p===100?'#059669':c.dot}}));
+    pr.appendChild(t);
+    pr.appendChild(h('div',{className:'slide-card-pct',style:{color:p===100?'#059669':c.text}},p+'%'));
+    card.appendChild(pr);
+    grid.appendChild(card);
+  });
+  if(count===0){
+    grid.appendChild(h('div',{style:{padding:'40px',textAlign:'center',color:'#94A3B8',fontSize:'15px',gridColumn:'1/-1'}},'해당 부서의 담당 슬라이드가 없습니다.'));
+  }
+  w.appendChild(grid);
+  return w;
+}
+
+function renderSlideDetail(){
+  const w=h('div',{className:'slide-detail'}),sl=SLIDES[state.activeSlide],c=dc(sl.dept[0]);
+  w.appendChild(h('button',{className:'slide-back',onClick:()=>{state.view='dashboard';render()}},'← 대시보드로 돌아가기'));
+  const hdr=h('div',{className:'slide-detail-header'});
+  hdr.appendChild(h('div',{className:'slide-detail-num'},sl.num+' — '+sl.section));
+  hdr.appendChild(h('div',{className:'slide-detail-title'},sl.title));
+  hdr.appendChild(h('div',{className:'slide-detail-sub'},sl.subtitle));
+  const dt=h('div',{className:'slide-detail-dept',style:{background:c.bg,color:c.text}});
+  dt.appendChild(h('span',{className:'dept-dot',style:{background:c.dot}}));dt.appendChild(document.createTextNode('담당: '+sl.dept.join(', ')));
+  hdr.appendChild(dt);w.appendChild(hdr);
+
+  sl.fields.forEach(field=>{
+    const filled=!!state.data[field.key]?.trim(),card=h('div',{className:'field-card'+(filled?' filled':''),'data-field-key':field.key});
+    const header=h('div',{className:'field-header'}),hl=h('div',{className:'field-header-left'});
+    hl.appendChild(h('div',{className:'field-dot',style:{background:filled?'#059669':'#F59E0B'}}));
+    hl.appendChild(h('div',{className:'field-label'},field.label));header.appendChild(hl);
+    const headerRight=h('div',{style:{display:'flex',alignItems:'center',gap:'8px'}});
+    const remoteBadge=h('div',{className:'remote-badge',style:{display:'none'}},'');
+    headerRight.appendChild(remoteBadge);
+    headerRight.appendChild(h('div',{className:'field-dept-tag',style:{background:c.bg,color:c.text}},sl.dept.join(', ')));
+    header.appendChild(headerRight);
+    card.appendChild(header);
+    const body=h('div',{className:'field-body'}),ta=h('textarea',{value:state.data[field.key]||'',placeholder:field.placeholder,rows:6,'data-key':field.key,
+      onFocus:()=>{card.classList.add('editing');sendEditingState(field.key,true);},onBlur:()=>{card.classList.remove('editing');sendEditingState(field.key,false);},
+      onInput:(e)=>{state.data[field.key]=e.target.value;const d=card.querySelector('.field-dot');
+        if(d)d.style.background=e.target.value.trim()?'#059669':'#F59E0B';
+        if(e.target.value.trim())card.classList.add('filled');else card.classList.remove('filled');
+        scheduleSave();}});
+    body.appendChild(ta);card.appendChild(body);w.appendChild(card);
+  });
+
+  const nav=h('div',{className:'slide-nav'});
+  nav.appendChild(h('button',{className:'slide-nav-btn slide-nav-prev',disabled:state.activeSlide===0,onClick:()=>{state.activeSlide--;render();window.scrollTo(0,0)}},'← 이전'));
+  nav.appendChild(h('div',{className:'slide-nav-mid'},(state.activeSlide+1)+' / '+SLIDES.length));
+  nav.appendChild(h('button',{className:'slide-nav-btn slide-nav-next',disabled:state.activeSlide===SLIDES.length-1,onClick:()=>{state.activeSlide++;render();window.scrollTo(0,0)}},'다음 →'));
+  w.appendChild(nav);return w;
+}
+
+(async()=>{render();await apiLoad();render();})();
+</script>
+</body>
+</html>
